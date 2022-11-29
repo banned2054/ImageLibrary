@@ -40,39 +40,35 @@ object ImageReloadCommand : SimpleCommand(
         if (FileConfig.haveSub)
         {
             ImageFileData.subFiles.clear()
-            ImageFileData.subFileNumber.clear()
+            ImageFileData.subTags.clear()
             ImageFileData.imagePaths.clear()
             val files = homePath.listFiles()
             for (file in files!!)
             {
                 if (file.isDirectory)
                 {
-                    ImageFileData.subFiles.add(file.absolutePath)
-                    val keyWord = file.name
+                    val keyWord = file.name.lowercase()
                     if (FileConfig.fileFilter.contains(keyWord))
                     {
                         continue
                     }
-                    ImageFileData.subFileNumber[keyWord] = ImageFileData.subFiles.size - 1;
-                    var images = listOf<String>(" ")
-                    images = images.toMutableList()
-                    images.clear()
-                    ImageFileData.imagePaths.add(images)
+                    ImageFileData.subFiles.add(file.absolutePath)
+                    ImageFileData.subTags.add(keyWord)
                 }
             }
             for (filePath in ImageFileData.subFiles)
             {
                 homePath = File(filePath)
                 val files = homePath.listFiles()
+                val imageList = listOf<String>("").toMutableList()
                 for (file in files!!)
                 {
                     if (!file.isDirectory)
                     {
-                        val splits = filePath.split(',').toTypedArray()
-                        val key = splits[splits.size - 1]
-                        ImageFileData.imagePaths[ImageFileData.subFileNumber[key]!!].add(file.absolutePath)
+                        imageList.add(file.absolutePath)
                     }
                 }
+                ImageFileData.imagePaths.add(imageList)
             }
         }
         else

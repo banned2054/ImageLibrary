@@ -1,6 +1,9 @@
 package banned.mirai
 
+import banned.mirai.FileConfig.sendImageCommandList
 import banned.mirai.command.ImageReloadCommand
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.permission.PermissionService
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -9,7 +12,11 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.utils.ExternalResource
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.info
+import java.io.File
 
 object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         id = "banned.mirai.image-library",
@@ -34,13 +41,78 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
             {
                 val command = event.message.toString().substring(startIndex = 1)
                 val splits = command.split(' ').toTypedArray()
-                if (splits.size == 1)
+                if (splits.isNotEmpty())
                 {
-                
-                }
-                else if (splits.size > 1)
-                {
-                
+                    if (sendImageCommandList.contains(splits[0]))
+                    {
+                        if (splits.size < 2)
+                        {
+                            if (FileConfig.haveSub)
+                            {
+                                val length = ImageFileData.subTags.size
+                                val imageIndex = (1..length).random() - 1
+                                val tag = ImageFileData.subTags[imageIndex].lowercase()
+                                
+                                val filePath = getImagePath(tag)
+                                
+                                val contact = event.sender
+                                val res : ExternalResource = File(filePath).toExternalResource()
+                                val image : Image = contact.uploadImage(res)
+                                withContext(Dispatchers.IO) {
+                                    res.close()
+                                }
+                                subject.sendMessage(image)
+                            }
+                            else
+                            {
+                                val filePath = getImagePath()
+                                
+                                val contact = event.sender
+                                val res : ExternalResource = File(filePath).toExternalResource()
+                                val image : Image = contact.uploadImage(res)
+                                withContext(Dispatchers.IO) {
+                                    res.close()
+                                }
+                                subject.sendMessage(image)
+                            }
+                            
+                        }
+                        else
+                        {
+                            if (FileConfig.haveSub)
+                            {
+                                val tag = splits[1].lowercase()
+                                if (ImageFileData.subTags.contains(tag))
+                                {
+                                    val filePath = getImagePath(tag)
+                                    
+                                    val contact = event.sender
+                                    val res : ExternalResource = File(filePath).toExternalResource()
+                                    val image : Image = contact.uploadImage(res)
+                                    withContext(Dispatchers.IO) {
+                                        res.close()
+                                    }
+                                    subject.sendMessage(image)
+                                }
+                                else
+                                {
+                                    subject.sendMessage("没有该tag，请检查tag是否出错")
+                                }
+                            }
+                            else
+                            {
+                                val filePath = getImagePath()
+                                
+                                val contact = event.sender
+                                val res : ExternalResource = File(filePath).toExternalResource()
+                                val image : Image = contact.uploadImage(res)
+                                withContext(Dispatchers.IO) {
+                                    res.close()
+                                }
+                                subject.sendMessage(image)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -48,7 +120,7 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         PERMISSION_EXECUTE_1 // 初始化, 注册权限
     }
     
-    var ImageMessageChannel = GlobalEventChannel.filter { it is GroupMessageEvent || it is FriendMessageEvent }
+    private var ImageMessageChannel = GlobalEventChannel.filter { it is GroupMessageEvent || it is FriendMessageEvent }
     
     val PERMISSION_EXECUTE_1 by lazy {
         PermissionService.INSTANCE.register(permissionId("reload-image"), "重新读取图片路径")
@@ -62,20 +134,20 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         ImageFileData.save()
     }
     
-    fun getImagePath() : String
+    private fun getImagePath() : String
     {
         val length = ImageFileData.imagePaths[0].size
         val imageIndex = (1..length).random() - 1
         return ImageFileData.imagePaths[0][imageIndex]
     }
     
-    fun getImagePath(tag : String) : String
+    private fun getImagePath(tag : String) : String
     {
-        if (ImageFileData.subFiles.contains(tag))
+        if (ImageFileData.subTags.contains(tag))
         {
-            val index = ImageFileData.subFileNumber[tag]
+            val index = ImageFileData.subFiles.indexOf(tag)
             
-            val length = ImageFileData.imagePaths[index!!].size
+            val length = ImageFileData.imagePaths[index].size
             val imageIndex = (1..length).random() - 1
             return ImageFileData.imagePaths[index][imageIndex]
         }

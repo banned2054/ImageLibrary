@@ -13,6 +13,9 @@ object FileConfig : AutoSavePluginConfig("ImagePath")
     @ValueDescription("图片根文件夹，如果有子文件夹则会按子文件夹的名字来分类")
     val filePath by value<String>()
     
-    @ValueDescription("不需要的文件夹，例如Cache之类")
+    @ValueDescription("不需要的文件夹，例如Cache之类,建议全小写英文")
     val fileFilter : List<String> by value()
+    
+    @ValueDescription("发图时使用的命令，建议全小写英文")
+    val sendImageCommandList : List<String> by value()
 }

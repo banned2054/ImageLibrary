@@ -9,8 +9,7 @@ object ImageFileData : AutoSavePluginData("ImageFileData")
     //Sub File name list
     var subFiles : MutableList<String> by value()
     
-    //Map file name to numb
-    var subFileNumber : HashMap<String, Int> by value()
+    var subTags : MutableList<String> by value()
     
     //imagepaths[mapnumb][index]
     var imagePaths : MutableList<MutableList<String>> by value()
