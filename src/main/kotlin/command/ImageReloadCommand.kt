@@ -61,6 +61,7 @@ object ImageReloadCommand : SimpleCommand(
                 homePath = File(filePath)
                 val files = homePath.listFiles()
                 val imageList = listOf<String>("").toMutableList()
+                imageList.clear()
                 for (file in files!!)
                 {
                     if (!file.isDirectory)
@@ -74,18 +75,17 @@ object ImageReloadCommand : SimpleCommand(
         else
         {
             ImageFileData.imagePaths.clear()
-            var images = listOf<String>(" ")
-            images = images.toMutableList()
+            val images = listOf<String>(" ").toMutableList()
             images.clear()
-            ImageFileData.imagePaths.add(images)
             val files = homePath.listFiles()
             for (file in files!!)
             {
                 if (!file.isDirectory)
                 {
-                    ImageFileData.imagePaths[0].add(file.absolutePath)
+                    images.add(file.absolutePath)
                 }
             }
+            ImageFileData.imagePaths.add(images)
             
         }
     }

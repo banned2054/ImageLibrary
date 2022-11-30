@@ -13,6 +13,7 @@ import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.info
@@ -37,9 +38,9 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         ImageReloadCommand.register()
         
         ImageMessageChannel.subscribeAlways<MessageEvent> { event ->
-            if (event.message.toString().startsWith('/'))
+            if (event.message.contentToString().startsWith('/'))
             {
-                val command = event.message.toString().substring(startIndex = 1)
+                val command = event.message.contentToString().substring(startIndex = 1)
                 val splits = command.split(' ').toTypedArray()
                 if (splits.isNotEmpty())
                 {
@@ -61,7 +62,14 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
                                 withContext(Dispatchers.IO) {
                                     res.close()
                                 }
-                                subject.sendMessage(image)
+                                if (event is GroupMessageEvent)
+                                {
+                                    subject.sendMessage(message.quote() + image)
+                                }
+                                else
+                                {
+                                    subject.sendMessage(image)
+                                }
                             }
                             else
                             {
@@ -86,13 +94,21 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
                                 {
                                     val filePath = getImagePath(tag)
                                     
-                                    val contact = event.sender
-                                    val res : ExternalResource = File(filePath).toExternalResource()
-                                    val image : Image = contact.uploadImage(res)
-                                    withContext(Dispatchers.IO) {
-                                        res.close()
+                                    if (filePath == "Wrong")
+                                    {
+                                        subject.sendMessage("该tag下没有图片，请导入图片")
                                     }
-                                    subject.sendMessage(image)
+                                    else
+                                    {
+                                        val contact = event.sender
+                                        val res : ExternalResource = File(filePath).toExternalResource()
+                                        val image : Image = contact.uploadImage(res)
+                                        withContext(Dispatchers.IO) {
+                                            res.close()
+                                        }
+                                        subject.sendMessage(image)
+                                    }
+                                    
                                 }
                                 else
                                 {
@@ -137,6 +153,10 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
     private fun getImagePath() : String
     {
         val length = ImageFileData.imagePaths[0].size
+        if (length < 1)
+        {
+            return "Wrong"
+        }
         val imageIndex = (1..length).random() - 1
         return ImageFileData.imagePaths[0][imageIndex]
     }
@@ -145,9 +165,14 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
     {
         if (ImageFileData.subTags.contains(tag))
         {
-            val index = ImageFileData.subFiles.indexOf(tag)
+            val index = ImageFileData.subTags.indexOf(tag)
             
             val length = ImageFileData.imagePaths[index].size
+            if (length < 1)
+            {
+                return "Wrong"
+            }
+            
             val imageIndex = (1..length).random() - 1
             return ImageFileData.imagePaths[index][imageIndex]
         }
