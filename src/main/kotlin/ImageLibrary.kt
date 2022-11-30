@@ -2,6 +2,7 @@ package banned.mirai
 
 import banned.mirai.FileConfig.sendImageCommandList
 import banned.mirai.command.ImageReloadCommand
+import banned.mirai.command.ImageRenameCommand
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
@@ -22,7 +23,7 @@ import java.io.File
 object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         id = "banned.mirai.image-library",
         name = "Image Library",
-        version = "0.1.0",
+        version = "0.2.0",
                                                        ) {
     author("banned")
     info("a plugin that can send picture from your storage")
@@ -36,6 +37,7 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         ImageFileData.reload()
         
         ImageReloadCommand.register()
+        ImageRenameCommand.register()
         
         ImageMessageChannel.subscribeAlways<MessageEvent> { event ->
             if (event.message.contentToString().startsWith('/'))
@@ -50,18 +52,20 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
                         {
                             if (FileConfig.haveSub)
                             {
+                                //获取文件tag
                                 val length = ImageFileData.subTags.size
                                 val imageIndex = (1..length).random() - 1
                                 val tag = ImageFileData.subTags[imageIndex].lowercase()
-                                
+                                //读取随机图片路径
                                 val filePath = getImagePath(tag)
-                                
+                                //读取图片
                                 val contact = event.sender
                                 val res : ExternalResource = File(filePath).toExternalResource()
                                 val image : Image = contact.uploadImage(res)
                                 withContext(Dispatchers.IO) {
                                     res.close()
                                 }
+                                //分群消息和好友消息
                                 if (event is GroupMessageEvent)
                                 {
                                     subject.sendMessage(message.quote() + image)
@@ -178,4 +182,10 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         }
         return "Wrong"
     }
+    
+    fun sendUrlImage(url : String)
+    {
+        val res : ExternalResource = File(url).toExternalResource()
+    }
+    
 }

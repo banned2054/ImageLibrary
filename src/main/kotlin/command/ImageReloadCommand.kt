@@ -9,8 +9,7 @@ import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermiss
 import java.io.File
 
 object ImageReloadCommand : SimpleCommand(
-        ImageLibrary,
-        "image-reload"
+        ImageLibrary, "image-reload"
                                          )
 {
     @Handler
@@ -34,7 +33,7 @@ object ImageReloadCommand : SimpleCommand(
     }
     
     @Suppress("NAME_SHADOWING")
-    private fun reloadFilePath()
+    public fun reloadFilePath()
     {
         var homePath = File(FileConfig.filePath)
         if (FileConfig.haveSub)
@@ -86,7 +85,6 @@ object ImageReloadCommand : SimpleCommand(
                 }
             }
             ImageFileData.imagePaths.add(images)
-            
         }
     }
 }
