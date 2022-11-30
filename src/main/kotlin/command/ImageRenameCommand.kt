@@ -11,7 +11,8 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.streams.asSequence
 
 object ImageRenameCommand : SimpleCommand(
-        ImageLibrary, "image-rename"
+        ImageLibrary, "image-rename",
+        description = "对图片库中的图片重命名"
                                          )
 {
     private val charPool : List<Char> =('A'..'Z') + ('0'..'9')

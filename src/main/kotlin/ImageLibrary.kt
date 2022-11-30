@@ -3,6 +3,7 @@ package banned.mirai
 import banned.mirai.FileConfig.sendImageCommandList
 import banned.mirai.command.ImageReloadCommand
 import banned.mirai.command.ImageRenameCommand
+import banned.mirai.command.ImageShowTagCommand
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
@@ -38,6 +39,7 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         
         ImageReloadCommand.register()
         ImageRenameCommand.register()
+        ImageShowTagCommand.register()
         
         ImageMessageChannel.subscribeAlways<MessageEvent> { event ->
             if (event.message.contentToString().startsWith('/'))

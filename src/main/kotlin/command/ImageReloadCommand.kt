@@ -9,7 +9,9 @@ import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermiss
 import java.io.File
 
 object ImageReloadCommand : SimpleCommand(
-        ImageLibrary, "image-reload"
+        ImageLibrary,
+        "image-reload",
+        description = "重新读取文件中的图片"
                                          )
 {
     @Handler
