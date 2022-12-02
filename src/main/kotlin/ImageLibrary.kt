@@ -1,11 +1,14 @@
 package banned.mirai
 
-import banned.mirai.FileConfig.sendImageCommandList
 import banned.mirai.command.ImageReloadCommand
 import banned.mirai.command.ImageRenameCommand
 import banned.mirai.command.ImageShowTagCommand
+import banned.mirai.data.FileConfig
+import banned.mirai.data.FileConfig.sendImageCommandList
+import banned.mirai.data.ImageFileData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.xdrop.fuzzywuzzy.FuzzySearch
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.permission.PermissionService
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -15,7 +18,6 @@ import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import net.mamoe.mirai.utils.info
@@ -45,42 +47,23 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
             if (event.message.contentToString().startsWith('/'))
             {
                 val command = event.message.contentToString().substring(startIndex = 1)
-                val splits = command.split(' ').toTypedArray()
-                if (splits.isNotEmpty())
+                if (FuzzySearch.extractOne(command.lowercase(), sendImageCommandList).score >= 80)
                 {
-                    if (sendImageCommandList.contains(splits[0]))
+                    val matchAns = FuzzySearch.extractOne(command.lowercase(), ImageFileData.subTags)
+                    
+                    if (FileConfig.haveSub)
                     {
-                        if (splits.size < 2)
+                        val tag = matchAns.string
+                        if (matchAns.score >= 80)
                         {
-                            if (FileConfig.haveSub)
+                            val filePath = getImagePath(tag)
+                            
+                            if (filePath == "Wrong")
                             {
-                                //获取文件tag
-                                val length = ImageFileData.subTags.size
-                                val imageIndex = (1..length).random() - 1
-                                val tag = ImageFileData.subTags[imageIndex].lowercase()
-                                //读取随机图片路径
-                                val filePath = getImagePath(tag)
-                                //读取图片
-                                val contact = event.sender
-                                val res : ExternalResource = File(filePath).toExternalResource()
-                                val image : Image = contact.uploadImage(res)
-                                withContext(Dispatchers.IO) {
-                                    res.close()
-                                }
-                                //分群消息和好友消息
-                                if (event is GroupMessageEvent)
-                                {
-                                    subject.sendMessage(message.quote() + image)
-                                }
-                                else
-                                {
-                                    subject.sendMessage(image)
-                                }
+                                subject.sendMessage("该tag下没有图片，请导入图片")
                             }
                             else
                             {
-                                val filePath = getImagePath()
-                                
                                 val contact = event.sender
                                 val res : ExternalResource = File(filePath).toExternalResource()
                                 val image : Image = contact.uploadImage(res)
@@ -93,49 +76,24 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
                         }
                         else
                         {
-                            if (FileConfig.haveSub)
-                            {
-                                val tag = splits[1].lowercase()
-                                if (ImageFileData.subTags.contains(tag))
-                                {
-                                    val filePath = getImagePath(tag)
-                                    
-                                    if (filePath == "Wrong")
-                                    {
-                                        subject.sendMessage("该tag下没有图片，请导入图片")
-                                    }
-                                    else
-                                    {
-                                        val contact = event.sender
-                                        val res : ExternalResource = File(filePath).toExternalResource()
-                                        val image : Image = contact.uploadImage(res)
-                                        withContext(Dispatchers.IO) {
-                                            res.close()
-                                        }
-                                        subject.sendMessage(image)
-                                    }
-                                    
-                                }
-                                else
-                                {
-                                    subject.sendMessage("没有该tag，请检查tag是否出错")
-                                }
-                            }
-                            else
-                            {
-                                val filePath = getImagePath()
-                                
-                                val contact = event.sender
-                                val res : ExternalResource = File(filePath).toExternalResource()
-                                val image : Image = contact.uploadImage(res)
-                                withContext(Dispatchers.IO) {
-                                    res.close()
-                                }
-                                subject.sendMessage(image)
-                            }
+                            subject.sendMessage("没有该tag，请检查tag是否出错")
                         }
                     }
+                    else
+                    {
+                        val filePath = getImagePath()
+                        
+                        val contact = event.sender
+                        val res : ExternalResource = File(filePath).toExternalResource()
+                        val image : Image = contact.uploadImage(res)
+                        withContext(Dispatchers.IO) {
+                            res.close()
+                        }
+                        subject.sendMessage(image)
+                    }
+                    
                 }
+                
             }
         }
         

@@ -13,3 +13,7 @@ repositories {
     maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
 }
+
+dependencies {
+    implementation("me.xdrop:fuzzywuzzy:1.4.0")
+}
