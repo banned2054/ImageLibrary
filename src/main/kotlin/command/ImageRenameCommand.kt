@@ -20,7 +20,7 @@ object ImageRenameCommand : SimpleCommand(
     @Handler
     suspend fun CommandSender.handle()
     {
-        
+    
         if (this.hasPermission(ImageLibrary.PERMISSION_EXECUTE_1))
         {
             renameFile()

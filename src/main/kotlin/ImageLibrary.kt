@@ -1,8 +1,6 @@
 package banned.mirai
 
-import banned.mirai.command.ImageReloadCommand
-import banned.mirai.command.ImageRenameCommand
-import banned.mirai.command.ImageShowTagCommand
+import banned.mirai.command.*
 import banned.mirai.config.CommandConfig
 import banned.mirai.config.FileConfig
 import banned.mirai.data.ImageFileData
@@ -34,6 +32,7 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         CommandConfig.reload()
         ImageFileData.reload()
     
+        ImageDeleteCommand.register()
         ImageReloadCommand.register()
         ImageRenameCommand.register()
         ImageShowTagCommand.register()
