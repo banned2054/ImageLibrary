@@ -1,8 +1,8 @@
 package banned.mirai.command
 
-import banned.mirai.data.FileConfig
-import banned.mirai.data.ImageFileData
 import banned.mirai.ImageLibrary
+import banned.mirai.config.FileConfig
+import banned.mirai.data.ImageFileData
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission

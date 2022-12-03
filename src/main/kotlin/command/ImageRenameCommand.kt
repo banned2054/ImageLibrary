@@ -1,8 +1,8 @@
 package banned.mirai.command
 
-import banned.mirai.data.FileConfig
-import banned.mirai.data.ImageFileData
 import banned.mirai.ImageLibrary
+import banned.mirai.config.FileConfig
+import banned.mirai.data.ImageFileData
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission
@@ -50,21 +50,30 @@ object ImageRenameCommand : SimpleCommand(
                 splits = finalName.split('.')
                 val imageType = splits[splits.size - 1]
                 val path = image.dropLast(finalName.length)
-                var newFileName =
-                        ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size)
-                                .asSequence().map(charPool::get).joinToString("")
-                var nowPath = "$path$newFileName.$imageType"
-                while (oldPaths.contains(nowPath))
-                {
-                    newFileName =
-                            ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size)
-                                    .asSequence().map(charPool::get).joinToString("")
-                    nowPath = "$path$newFileName.$imageType"
-                }
+    
+                val nowPath = getRandomName(path, imageType, oldPaths)
+    
                 val oldFile = File(image)
                 val newFile = File(nowPath)
                 oldFile.renameTo(newFile)
             }
         }
+    }
+    
+    
+    fun getRandomName(path : String, imageType : String, oldPaths : List<String>) : String
+    {
+        var newFileName =
+                ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size)
+                        .asSequence().map(charPool::get).joinToString("")
+        var nowPath = "$path$newFileName.$imageType"
+        while (oldPaths.contains(nowPath))
+        {
+            newFileName =
+                    ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size)
+                            .asSequence().map(charPool::get).joinToString("")
+            nowPath = "$path$newFileName.$imageType"
+        }
+        return nowPath
     }
 }

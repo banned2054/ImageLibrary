@@ -13,4 +13,5 @@ object ImageFileData : AutoSavePluginData("ImageFileData")
     
     //imagepaths[mapnumb][index]
     var imagePaths : MutableList<MutableList<String>> by value()
+    
 }
