@@ -32,6 +32,7 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
         CommandConfig.reload()
         ImageFileData.reload()
     
+        ImageHelpCommand.register()
         ImageDeleteCommand.register()
         ImageReloadCommand.register()
         ImageRenameCommand.register()
