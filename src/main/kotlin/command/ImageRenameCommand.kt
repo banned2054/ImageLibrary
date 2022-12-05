@@ -11,11 +11,10 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.streams.asSequence
 
 object ImageRenameCommand : SimpleCommand(
-        ImageLibrary, "image-rename",
-        description = "对图片库中的图片重命名"
+        ImageLibrary, "image-rename", description = "对图片库中的图片重命名"
                                          )
 {
-    private val charPool : List<Char> =('A'..'Z') + ('0'..'9')
+    private val charPool : List<Char> = ('A'..'Z') + ('0'..'9')
     
     @Handler
     suspend fun CommandSender.handle()
@@ -64,14 +63,14 @@ object ImageRenameCommand : SimpleCommand(
     fun getRandomName(path : String, imageType : String, oldPaths : List<String>) : String
     {
         var newFileName =
-                ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size)
-                        .asSequence().map(charPool::get).joinToString("")
+                ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size).asSequence()
+                        .map(charPool::get).joinToString("")
         var nowPath = "$path$newFileName.$imageType"
         while (oldPaths.contains(nowPath))
         {
             newFileName =
-                    ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size)
-                            .asSequence().map(charPool::get).joinToString("")
+                    ThreadLocalRandom.current().ints(FileConfig.imageNameLength.toLong(), 0, charPool.size).asSequence()
+                            .map(charPool::get).joinToString("")
             nowPath = "$path$newFileName.$imageType"
         }
         return nowPath

@@ -4,7 +4,7 @@ import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.ValueDescription
 import net.mamoe.mirai.console.data.value
 
-object FileConfig : AutoSavePluginConfig("ImagePath")
+object FileConfig : AutoSavePluginConfig("ImagePathSetting")
 {
     
     @ValueDescription("是否有子目录，例如不同图片存不同的子文件里，根据子文件名分类")

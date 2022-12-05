@@ -8,9 +8,7 @@ import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission
 
 object ImageShowTagCommand : SimpleCommand(
-        ImageLibrary,
-        "image-tags",
-        description = "展示图片tag和对应tag的图片数量"
+        ImageLibrary, "image-tags", description = "展示图片tag和对应tag的图片数量"
                                           )
 {
     @Handler

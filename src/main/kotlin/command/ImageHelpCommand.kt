@@ -6,10 +6,7 @@ import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission
 
 object ImageHelpCommand : SimpleCommand(
-        ImageLibrary,
-        "image",
-        "image-help",
-        description = "提供指令帮助"
+        ImageLibrary, "image", "image-help", description = "提供指令帮助"
                                        )
 {
     @Handler
@@ -19,9 +16,7 @@ object ImageHelpCommand : SimpleCommand(
         if (this.hasPermission(ImageLibrary.PERMISSION_EXECUTE_1))
         {
             sendMessage(
-                    "/发(或者send) + tag                  发图片\n" +
-                    "/存(或者add) + tag + [图片]\t上传图\n" +
-                    "/image-tags                             展示当前图库中存的图片数\n"
+                    "/发(或者send) + tag                  发图片\n" + "/存(或者add) + tag + [图片]\t上传图\n" + "/image-tags                             展示当前图库中存的图片数\n"
                        )
         }
         else

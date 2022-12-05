@@ -3,6 +3,7 @@ package banned.mirai
 import banned.mirai.command.*
 import banned.mirai.config.CommandConfig
 import banned.mirai.config.FileConfig
+import banned.mirai.config.ImageSearchConfig
 import banned.mirai.data.ImageFileData
 import banned.mirai.register.downloadImageRegister
 import banned.mirai.register.sendImageRegister
@@ -30,6 +31,7 @@ object ImageLibrary : KotlinPlugin(JvmPluginDescription(
     
         FileConfig.reload()
         CommandConfig.reload()
+        ImageSearchConfig.reload()
         ImageFileData.reload()
     
         ImageHelpCommand.register()
